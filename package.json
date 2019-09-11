@@ -1,0 +1,14 @@
+{
+  "name": "neuronal-network",
+  "version": "0.0.1",
+  "description": "neuronal network",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Javier Rubio",
+  "license": "ISC",
+  "dependencies": {
+    "random": "^2.1.1"
+  }
+}
