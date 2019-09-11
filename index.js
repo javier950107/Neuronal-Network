@@ -1,7 +1,7 @@
 const NeuronalNetwork = require('./neuronalNetwork.js');
 
-let brain = new NeuronalNetwork(2, 3, 1);
-//let brain = new NeuronalNetwork(2, [2, 1], 1);
+//let brain = new NeuronalNetwork(2, 3, 1);
+let brain = new NeuronalNetwork(2, [3, 3], 1);
 let trainingData = [{
         inputs: [0, 1],
         targets: [1]

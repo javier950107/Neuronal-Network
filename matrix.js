@@ -44,7 +44,9 @@ class Matrix {
             }
         } else {
             //Error size matrix
+            console.log('Error length matrix')
             result = 0;
+
         }
         return result;
     }
