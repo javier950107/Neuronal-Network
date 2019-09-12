@@ -26,10 +26,6 @@ class NeuronalNetwork {
 
         this.biasO = new Matrix(outputs, 1);
         this.learningRate = 0.1;
-
-        //console.log(this.wih[1].matrix);
-        //console.log(this.biasH[1].matrix);
-
     }
 
     /**
@@ -76,10 +72,8 @@ class NeuronalNetwork {
         let output = this.who.multiply(resultInputHidden[this.hiddensL - 1]);
         output.add(this.biasO);
         output.addSigmoid();
-
         //Target - Outputs
         let outputError = targetM.substract(output);
-
         // Back propagation.
         //Get gradient output to hidden
         let gradientOH = output.derivateFunction();
@@ -95,40 +89,43 @@ class NeuronalNetwork {
         /** 
          * Repeat N
          */
-        let whoTranspose = [];
-        let hiddenError = [];
-        let gradientHI = [];
+        let whoTranspose;
+        let error = [];
+        let aux = this.hiddensL - 2;
         let inputTranspose = [];
-        let weightsIHDeltas = [];
-        //Calculate error
-        whoTranspose = this.who.transpose();
-        hiddenError = whoTranspose.multiply(outputError);
 
-        //Gradient hidden to input
-        gradientHI = resultInputHidden[1].derivateFunction();
-        gradientHI.getGradient(hiddenError, this.learningRate); // Gradient * outputError *learningRate = new value
+        for (let i = this.hiddensL - 1; i >= 0; i--) {
+            if (i == this.hiddensL - 1) {
+                //console.log('Calcular error de salida ' + i)
+                //Calculate error
+                whoTranspose = this.who.transpose();
+                error[i] = whoTranspose.multiply(outputError);
+            } else {
+                //console.log('Calcular error ' + i)
+                whoTranspose = this.wih[i + 1].transpose();
+                error[i] = whoTranspose.multiply(error[i + 1]);
+            }
+            //console.log('Calculamos el gradiente ' + i)
+            //Gradient hidden to input
+            let gradientHI = resultInputHidden[i].derivateFunction();
+            gradientHI.getGradient(error[i], this.learningRate); // Gradient * outputError *learningRate = new value
 
-        inputTranspose = resultInputHidden[0].transpose();
-        weightsIHDeltas = gradientHI.multiply(inputTranspose);
+            if (aux < 0) {
+                //console.log('Pesos de entrada ' + i)
+                inputTranspose[i] = inputM.transpose();
+            } else {
+                ///console.log('Capas ocultas ' + i)
+                inputTranspose[i] = resultInputHidden[aux].transpose();
+                aux--;
+            }
 
-        // adjust the bias
-        this.wih[1].add(weightsIHDeltas);
-        this.biasH[1].add(gradientHI);
+            let weightsIHDeltas = gradientHI.multiply(inputTranspose[i]);
+            //console.log('Actualizamos pesos ' + i)
+            // adjust the bias
+            this.wih[i].add(weightsIHDeltas);
+            this.biasH[i].add(gradientHI);
+        }
 
-        //Calculate error
-        let whoTranspose2 = this.wih[1].transpose();
-        let hiddenError2 = whoTranspose2.multiply(hiddenError);
-
-        //Gradient hidden to input
-        let gradientHI2 = resultInputHidden[0].derivateFunction();
-        gradientHI2.getGradient(hiddenError2, this.learningRate);
-
-        let inputTranspose2 = inputM.transpose();
-        let weightsIHDeltas2 = gradientHI2.multiply(inputTranspose2);
-
-        // adjust the bias
-        this.wih[0].add(weightsIHDeltas2);
-        this.biasH[0].add(gradientHI2);
     }
 }
 
